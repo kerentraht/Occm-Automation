@@ -1,3 +1,0 @@
-# Instructions
-## sample
-bla bla 
