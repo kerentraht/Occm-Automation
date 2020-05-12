@@ -1,0 +1,73 @@
+---
+- name: Find Account If Not Exsist Create
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+
+# Production
+   client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
+   auth0_domain: netapp-cloud-account.auth0.com
+
+  tasks:
+    - name: Get API Token
+      uri:
+        url: https://{{auth0_domain}}/oauth/token
+        method: POST
+        body_format: json
+        return_content: yes
+        body: {"grant_type":"refresh_token", "refresh_token": "{{ApiToken}}", "client_id": "{{client_id}}"}
+        status_code: 200,204,202
+      register: token_response
+      ignore_errors: no
+    - name: set API token & token_type
+      set_fact: tokenAPI="{{ (token_response.content|from_json).access_token }}"
+    - set_fact: token_typeAPI="{{ (token_response.content|from_json).token_type }}"
+# Get Account
+    - name: Get Account
+      uri:
+        url: https://cloudmanager.cloud.netapp.com/tenancy/account
+        method: GET
+        #body_format: json
+        headers:
+          Authorization: "Bearer {{ tokenAPI }}"
+          X-User-Token: "Bearer {{ tokenAPI }}"
+        return_content: yes
+        status_code: 200,204,202
+      register: account_response
+      ignore_errors: no
+    - set_fact: account="{{ account_response }}"
+# Create Account
+    - name: Create Account
+      uri:
+       url: https://cloudmanager.cloud.netapp.com/tenancy/account/{{AccountName}}
+       method: POST
+       headers:
+         Authorization: "Bearer {{ tokenAPI }}"
+         X-User-Token: "Bearer {{ tokenAPI }}"
+       return_content: yes
+       status_code: 200,204,202
+       register: account_create_response
+       ignore_errors: no
+      when: account_response.json|length == 0
+# Print List of accounts
+    - name: List of Accounts After Create
+      uri:
+        url: https://cloudmanager.cloud.netapp.com/tenancy/account
+        method: GET
+        #body_format: json
+        headers:
+          Authorization: "Bearer {{ tokenAPI }}"
+          X-User-Token: "Bearer {{ tokenAPI }}"
+        return_content: yes
+        status_code: 200,204,202
+      register: account_create_response
+      ignore_errors: no
+    - debug: msg={{ account_create_response.json }}
+      when: account_create_response.json|length != 0
+
+    - include_tasks: ./subscription.yml
+      vars:
+        token: "{{tokenAPI}}"
+        accountId: "{{item}}"
+      with_items: "{{ account_create_response.json | json_query('[*].accountPublicId') }}"

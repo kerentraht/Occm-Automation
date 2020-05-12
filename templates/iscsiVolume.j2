@@ -1,0 +1,30 @@
+{
+	"workingEnvironmentId": "{{we_id}}",
+	"svmName": "{{svmName}}",
+#	"exportPolicyInfo": {
+#		"policyType": "custom",
+#		"ips": ["0.0.0.0/0"]
+#	},
+	"snapshotPolicyName": "default",
+	"name": "{{volName}}",
+	"providerVolumeType": "{{providerType}}",
+	"verifyNameUniqueness": true,
+	"size": {
+		"size": {{volSize}},
+		"unit": "GB"
+	},
+	"enableThinProvisioning": true,
+	"enableDeduplication": true,
+	"enableCompression": true,
+	"maxNumOfDisksApprovedToAdd": {{numOfDisks}},
+	"aggregateName": "{{aggregateName}}",
+    "iscsiInfo": {
+        "osName": {{os_name}},
+        "igroupCreationRequest": {
+            "initiators": [
+                "{{iqn}}"
+            ],
+            "igroupName": "{{igName}}"
+        },
+    }
+}

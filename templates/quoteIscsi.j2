@@ -1,0 +1,21 @@
+{
+	"workingEnvironmentId": "{{we_id}}",
+	"svmName": "{{svmName}}",
+#	"exportPolicyInfo": {
+#		"policyType": "custom",
+#		"ips": ["0.0.0.0/0"]
+#	},
+	"snapshotPolicyName": "default",
+	"name": "{{volName}}",
+	"providerVolumeType": "{{providerType}}",
+#	"capacityTier": "S3",
+#	"tieringPolicy": "auto",
+	"verifyNameUniqueness": true,
+	"size": {
+		"size": {{volSize}},
+		"unit": "GB"
+	},
+	"enableThinProvisioning": true,
+	"enableDeduplication": true,
+	"enableCompression": true
+}
