@@ -66,7 +66,7 @@ https://www.synology.com/en-us/knowledgebase/DSM/tutorial/Virtualization/How_to_
 + Guide reference for windows host can be found here:
 https://www.virtualizationhowto.com/2017/07/add-iscsi-shared-storage-in-windows-server-2016/
 
-
-
-![alt text](https://github.com/kerentraht/Occm-Automation/blob/master/images(1).png "copyright") Keren Trajtenberg
-![alt text](https://github.com/kerentraht/Occm-Automation/blob/master/images(1).png "copyright") Esty Lipkin
+![alt text](https://github.com/kerentraht/Occm-Automation/blob/master/images(1).png "copyright")
+Keren Trajtenberg
+![alt text](https://github.com/kerentraht/Occm-Automation/blob/master/images(1).png "copyright")
+Esty Lipkin
