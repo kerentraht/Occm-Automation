@@ -67,5 +67,5 @@ https://www.synology.com/en-us/knowledgebase/DSM/tutorial/Virtualization/How_to_
 https://www.virtualizationhowto.com/2017/07/add-iscsi-shared-storage-in-windows-server-2016/
 
 
-![alt text](https://github.com/kerentraht/Occm-Automation/png-transparent-copyright-symbol-copyright-law-of-the-united-states-computer-icons-copyright-text-trademark-words-phrases.png) 
+![alt text](https://github.com/kerentraht/Occm-Automation/blob/master/png-transparent-copyright-symbol-copyright-law-of-the-united-states-computer-icons-copyright-text-trademark-words-phrases.png "copyrights") 
 Keren Trajtenberg
