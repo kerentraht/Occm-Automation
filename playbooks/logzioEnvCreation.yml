@@ -1,0 +1,90 @@
+---
+- name: Create CVO Environment for logzio
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+      instance_type: m4.4xlarge
+      region: "{{region}}"
+      otc_name: testAnsible
+      vpc_id: "{{vpc}}"
+      node1SubnetId: "{{node1SubnetId}}"
+      node2SubnetId: "{{node2SubnetId}}"
+      mediatorSubnetId: "{{mediatorSubnetId}}"
+      routeTableIds: "{{routeTableIds}}"
+      cloud_provider_account: InstanceProfile
+      key_pair: "{{keyPair}}"
+      occm_ip: "{{occmIp}}"
+      client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
+      auth0_domain: netapp-cloud-account.auth0.com
+  tasks:
+# Create Template File
+    - name: Print Auth Domain
+      debug: msg={{auth0_domain}}
+    - name: Get Token
+      uri:
+        url: https://{{auth0_domain}}/oauth/token
+        method: POST
+        body_format: json
+        return_content: yes
+        body: {"grant_type":"refresh_token", "refresh_token": "{{refToken}}", "client_id": "{{client_id}}"}
+        status_code: 200,204,202
+      register: token_response
+      ignore_errors: no
+    - name: set token & token_type
+      set_fact: token="{{ (token_response.content|from_json).access_token }}"
+    - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
+    - name: Get Tenant
+      uri:
+        url: "http://{{occm_ip}}/occm/api/tenants"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        timeout: 180
+      register: tenant_response
+    - set_fact: tenant_id="{{tenant_response.json.0.publicId}}"
+    - name: Print Tenant ID
+      debug: msg={{tenant_id}}
+    - name: Create Template File For CVO
+      template: src=../templates/cvo_aws_ha.j2 dest=../templates/cvo_aws_ha.json
+    - name: Create OTC
+      uri:
+        url: "http://{{occm_ip}}/occm/api/aws/ha/working-environments"
+        method: POST
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        body_format: json
+        body: "{{ lookup('file','../templates/cvo_aws_ha.json') }}"
+        status_code: 200,204,202
+        timeout: 180
+      register: otc_response
+    - name: Print OTC
+      debug: msg={{otc_response.oncloud_request_id}}
+    - debug: msg={{otc_response.json.publicId}}
+    - name: Wait for OTC
+      uri:
+        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{otc_response.oncloud_request_id}}"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        body_format: json
+        timeout: 180
+      register: audit_response
+      until: audit_response.json.status != 0
+      retries: 40
+      delay: 300
+    - name: set response
+      set_fact: status="{{ audit_response.json.status }}"
+    - name: Print Result
+      debug: msg="Done Success"
+      when: status == '1'
+    - name: Print Result
+      debug: msg="Done Error"
+      when: status == '-1'
+# Create aggregates
+- name: kd
