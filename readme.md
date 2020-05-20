@@ -1,4 +1,8 @@
 # OCCM Ansible automation usage
+This repository contains an automated Ansible pipeline for OCCM management, allowing a fully deployed environment with one command only.
+Following is a step-by-step user guide to run your own deployement with Ansible.
+
+Good luck (:
 ## Step 1: Get your refresh token
 ### Overview
 A refresh token is required in order to run any ansible playbook on OCCM. 
@@ -37,24 +41,50 @@ TASK [Get Subscriptions for account account-xxxxxxx] ***************************
 ok: [localhost] => (item={'cloudProvider': 'aws', 'subscriptionName': 'Prod Account Subscription', 'subscriptionId': 'aws-XXXXXXXXXXXXXXXX-FFFFFFFFFF'})
 ok: [localhost] => (item={'cloudProvider': 'gcp', 'subscriptionName': 'GCP SUBSCRIPTION', 'subscriptionId': 'gcp-none-yet-123456789'})
 ```
-## Step 3:Create Volume with Iscsi 
-### Required variables:
-+ occmIp: The IP-address of the Cloud Manager
+## Step 3: Setting up your inventory file
+In the main directory you can find the `inventory.yml` file, which contaoins all the variables that are required to run the automation, such as desired volume name, the OCCM IP address, etc...
+This file should be modified by the user, according to the desired environment.
+### Static variables (Never change):
++ auth0_domain: netapp-cloud-account.auth0.com
++ client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
++ cloud_provider_account: InstanceProfile
+### User input variables:
 + refToken: The refresh token string (from step1)
-+ weType: Working environment type - single node or HA [aws|awsha]
-+ weName: String with the name of the working environment
++ occm_ip: Cloud manager's Ip address
++ envType: Working environment type - **aws** for single node or **awsha** for HA cluster
++ otc_name: The desired working environment's name
++ region: AWS region
++ vpc_id: AWS vpc Id
++ node1SubnetId: Id of the AWS subnet in which the first node wil be created
++ node2SubnetId: Id of the AWS subnet in which the second node wil be created
++ mediatorSubnetId: Id of the AWS subnet in which the mediator wil be created
++ routeTableIds: Id of VPC's route table
++ instance_type: AWS instance type for the CVO, for example: m4.4xlarge
++ key_pair: AWS key pair that will be used to connect to the CVO instane
++ svmPassword: Choose the login password for the CVO
++ clusterFloatingIP: Choose an IP address outside of your VPC for the cluster managment
++ dataFloatingIP1: Choose an IP address outside of your VPC for the first node
++ dataFloatingIP2: Choose an IP address outside of your VPC for the second node
++ svmFloatingIP: Choose an IP address outside of your VPC
++ providerType: The disk type for the aggregate [gp2|st1|sc1]
++ aggr1Name: aggr1
++ aggr2Name: aggr_8t_2
++ aggr3Name: aggr_8t_3
+#### Dictionary variables for loops:
 + volName: The name of the volume to create
-+ providerType: The disk type for the volume [gp2|st1|sc1]
-+ volSize: The size of the volume in GB 
-+ os_name: [linux|windows|vmware]
-+ iqn: The IQN of the initiator host
-+ igName: The name of igroup that will be created
-### Instuctions
-Run the "createIscsiVolume.yml" playbook from the path in which the file is located with the extre-vars that are listed in the 'required variables' section (do not keep the square brackets in the final command).
++ volSize: The size of the volume in TB
++ aggrName: the aggregate in which the volumw will be created
++ os_name: the initiator's host operating system [linux|windows|vmware]
++ iqn: The initiator's host IQN
+
+## Step 4: Run the playbook
+### Instructions
+Run the "EnvDeployment.yml" playbook (which is located under playbook dir) with the inventory.yml file attached as shown in the usage below. 
+
 ### Usage
->NOTE: The followoing command will create a vol
+>NOTE: The followoing command will create the full environment
 ```
-ansible-playbook createIscsiVolume.yml --extra-vars "occmIp=[Cloud manager's IP] refToken=[refresh token string] weType=[aws|awsha] weName=[working-environment name] volName=[desired volume name] providerType=[gp2|st1|sc1] volSize=[desired size in GB] os_name=[linux|windows|vmware] iqn=[iqn of the initiator] igName=[desired igroup name]"
+ansible-playbook /playbooks/EnvDeployment.yml -i inventory.yml
 ```
 Wait for the playbook to complete all tasks successfully!
 
