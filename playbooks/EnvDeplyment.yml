@@ -20,5 +20,7 @@
         aggregateName: "{{ item.aggrName }}"
         volName: "{{ item.volName }}"
         iqn: "{{ item.iqn }}"
+        os_name: "{{ item.os_name }}}"
+        volSize: "{{ item.volSize }}"
       with_items:
         - "{{ vars.list }}"

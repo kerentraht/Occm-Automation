@@ -3,39 +3,38 @@ all:
   hosts:
     localhost
   vars:
+    auth0_domain: netapp-cloud-account.auth0.com
+    client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
+    cloud_provider_account: InstanceProfile
     refToken: IcbTjaORns4f95XBeHuDk9CsyWHqqCDlqsU_mK4U7OCLn
-    instance_type: m4.4xlarge
-    region: us-west-2
-    otc_name: kerenEstyCvoHA
-    vpc_id: vpc-445d4f21
+    occm_ip: 34.214.157.26
     envType: awsha
+    otc_name: kerenEstyCvoHA
+    region: us-west-2
+    vpc_id: vpc-445d4f21
     node1SubnetId: subnet-0aca62be7e94569a3
     node2SubnetId: subnet-0b110486aa5b132ba
     mediatorSubnetId: subnet-0fee3eb712bcc11ea
     routeTableIds: rtb-0842e18db76cdff8a
-    cloud_provider_account: InstanceProfile
+    instance_type: m4.4xlarge
     key_pair: kerens-key
-    occm_ip: 34.214.157.26
-    client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
-    auth0_domain: netapp-cloud-account.auth0.com
     svmPassword: Netapp123
     clusterFloatingIP: 192.168.0.9
     dataFloatingIP1: 192.168.0.10
     dataFloatingIP2: 192.168.0.11
     svmFloatingIP: 192.168.0.12
+    providerType: gp2
     aggr1Name: aggr1
     aggr2Name: aggr_8t_2
     aggr3Name: aggr_8t_3
-    providerType: gp2
-    volSize: 16
 # The following is a dictionary of all volumes that will be created
     list:
-      - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr1, volName: iscsi2, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr1, volName: iscsi3, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_2, volName: iscsi4, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_2, volName: iscsi5, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_2, volName: iscsi6, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_3, volName: iscsi7, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_3, volName: iscsi8, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
-      - {aggrName: aggr_8t_3, volName: iscsi9, iqn: "iqn.1994-05.com.redhat:5a1717a4e42"}
+      - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr1, volName: iscsi2, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr1, volName: iscsi3, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_2, volName: iscsi4, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_2, volName: iscsi5, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_2, volName: iscsi6, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_3, volName: iscsi7, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_3, volName: iscsi8, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+      - {aggrName: aggr_8t_3, volName: iscsi9, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
