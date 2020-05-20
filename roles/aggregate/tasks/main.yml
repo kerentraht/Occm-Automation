@@ -1,0 +1,72 @@
+---
+# tasks file for aggregate 
+# Create Template File
+    - name: Print Auth Domain
+      debug: msg={{auth0_domain}}
+    - name: Get Token
+      uri:
+        url: https://{{auth0_domain}}/oauth/token
+        method: POST
+        body_format: json
+        return_content: yes
+        body: {"grant_type":"refresh_token", "refresh_token": "{{refToken}}", "client_id": "{{client_id}}"}
+        status_code: 200,204,202
+      register: token_response
+      ignore_errors: no
+    - name: set token & token_type
+      set_fact: token="{{ (token_response.content|from_json).access_token }}"
+    - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
+    - name: Get OTC Id
+      uri:
+        url: "http://{{occm_ip}}/occm/api/vsa/working-environments"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        timeout: 180
+      register: otc_response
+    - name: Print OTC public Id
+      debug: msg={{otc_response.json.0.publicId}}
+    - name: set we id
+      set_fact: we_id="{{otc_response.json.0.publicId}}"
+    - name: Print WE ID
+      debug: msg={{we_id}}
+    - name: Create Template File For aggregate
+      template: src=../templates/aggregate.j2 dest=../dataQueries/aggregate.json
+    - name: Create Aggregate
+      uri:
+        url: "http://{{occm_ip}}/occm/api/aws/ha/aggregates"
+        method: POST
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        body_format: json
+        body: "{{ lookup('file','../dataQueries/aggregate.json') }}"
+        status_code: 200,204,202
+        timeout: 180
+      register: aggr_response
+    - name: Print Create aggregate request ID
+      debug: msg={{aggr_response.oncloud_request_id}}
+    - name: Wait for Aggregate creation
+      uri:
+        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{aggr_response.oncloud_request_id}}"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        body_format: json
+        timeout: 180
+      register: audit_response
+      until: audit_response.json.status !=   0
+      retries: 10
+      delay: 60
+    - name: set response
+      set_fact: status="{{ audit_response.json.status }}"
+    - name: Print Aggregate Result
+      debug: msg="Done Success"
+      when: status == '1'
+    - name: Print Aggregate Result
+      debug: msg="Done Error"
+      when: status == '-1'

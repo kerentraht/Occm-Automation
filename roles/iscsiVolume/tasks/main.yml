@@ -1,0 +1,115 @@
+---
+# Create Template File
+    - debug: msg="{{weType}}"
+    - name: Set Enviroment Detail For Cloud Portal
+      set_fact: envType="vsa"
+      when: weType == 'aws'
+    - name: Set Environment Detail For AWS-HA
+      set_fact: envType="aws/ha"
+      when:  weType == 'awsha'
+    - name: Validate OCCM environment
+      fail: msg="Failed to get cloud OCCM to work with --> {{weType}} ?"
+      when: envType is undefined
+    - name: Print Auth Domain
+      debug: msg={{auth0_domain}}
+    - name: Get Token
+      uri:
+        url: https://{{auth0_domain}}/oauth/token
+        method: POST
+        body_format: json
+        return_content: yes
+        body: {"grant_type":"refresh_token", "refresh_token": "{{refToken}}", "client_id": "{{client_id}}"}
+        status_code: 200,204,202
+      register: token_response
+      ignore_errors: no
+    - name: set token & token_type
+      set_fact: token="{{ (token_response.content|from_json).access_token }}"
+    - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
+## Get CVO Detail
+    - name: Get CVO Name
+      uri:
+        url: "http://{{occm_ip}}/occm/api/vsa/working-environments"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        timeout: 180
+        validate_certs: no
+      register: we_response
+    - name: Print Working Environment
+      debug: msg={{we_response}}
+## Set Parameters According to CVO
+    - name: Get Working Environment with given Name
+      set_fact: we={{item}}
+      loop: "{{ we_response.json | json_query(we_query) }}"
+      vars:
+        we_query: "[?name=='{{otc_name}}'].{publicId: publicId, svmName: svmName, tenantId: tenantId, weType: workingEnvironmentType}"
+## Exit If CVO is not apear
+    - name: Exit if CVO name does not exists
+      fail: msg="Failed to find given CVO name  - {{otc_name}}"
+      when: we is undefined
+    - name: set we id
+      set_fact: we_id="{{we.publicId}}"
+    - name: Print WE ID
+      debug: msg={{we_id}}
+    - name: set svmName
+      set_fact: svmName="{{we.svmName}}"
+    - name: Print SVM Name
+      debug: msg={{svmName}}
+    - name: Create Template File For quote
+      template: src=../templates/quoteIscsi.j2 dest=../dataQueries/quote.json
+    - name: Do Quote OTC
+      uri:
+        url: "http://{{occm_ip}}/occm/api/{{envType}}/volumes/quote"
+        method: POST
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        body_format: json
+        body: "{{ lookup('file','../dataQueries/quote.json') }}"
+        status_code: 200,204,202
+        timeout: 180
+      register: quote_response
+    - name: Print Quote
+      debug: msg={{quote_response.json.numOfDisks}}
+    - name: set numOfDisks & aggregateName
+      set_fact: numOfDisks="{{quote_response.json.numOfDisks}}"
+    - name: Create Template File For volume
+      template: src=../templates/iscsiVolume.j2 dest=../dataQueries/volume.json
+    - name: Create Volume
+      uri:
+        url: "http://{{occm_ip}}/occm/api/{{envType}}/volumes"
+        method: POST
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        body_format: json
+        body: "{{ lookup('file','../dataQueries/volume.json') }}"
+        status_code: 200,204,202
+        timeout: 180
+      register: vol_response
+    - name: Print Create volume request ID
+      debug: msg={{vol_response.oncloud_request_id}}
+    - name: Wait for Volume creation
+      uri:
+        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{vol_response.oncloud_request_id}}"
+        method: GET
+        headers:
+           Authorization: "{{token_type}} {{ token }}"
+           Referer: "Ansible"
+        status_code: 200,204,202
+        body_format: json
+        timeout: 180
+      register: audit_response
+      until: audit_response.json.status != 0
+      retries: 10
+      delay: 20
+    - name: set response
+      set_fact: status="{{ audit_response.json.status }}"
+    - name: Print Volume Result
+      debug: msg="Volume creation succeeded"
+      when: status == '1'
+    - name: Print Volume Result
+      debug: msg="Volume creation failed"
+      when: status == '-1'
