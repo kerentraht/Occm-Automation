@@ -26,9 +26,9 @@ all:
     providerType: gp2
 # A dictionary of all aggregates that will be created
     aggrList:
-      - {aggrName: aggr1}
-      - {aggrName: aggr2}
-      - {aggrName: aggr3}
+      - {aggrName: aggr1, diskSize: 8}
+      - {aggrName: aggr2, diskSize: 8}
+      - {aggrName: aggr3, diskSize: 8}
 # A dictionary of all volumes that will be created
     volList:
       - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}

@@ -67,15 +67,22 @@ This file should be modified by the user, according to the desired environment.
 + dataFloatingIP2: Choose an IP address outside of your VPC for the second node
 + svmFloatingIP: Choose an IP address outside of your VPC
 + providerType: The disk type for the aggregate [gp2|st1|sc1]
-+ aggr1Name: aggr1
-+ aggr2Name: aggr_8t_2
-+ aggr3Name: aggr_8t_3
+
 #### Dictionary variables for loops:
-+ volName: The name of the volume to create
-+ volSize: The size of the volume in TB
-+ aggrName: the aggregate in which the volumw will be created
-+ os_name: the initiator's host operating system [linux|windows|vmware]
+The "aggrList" and "volList" variables are dictionary vars representing the aggregates and volumes to create, with their additional vars. 
+Each row in the loop represents one volume or aggregate that will be created.
+Add/Remove rows according to the desired number of aggrgateds and volume you wish to create.
+
+##### vars for aggregates:
++ aggrName: The name for the new aggregate
++ diskSize: EBS disk size for the creation of the aggregate
+
+##### Vars for iscsi volumes:
++ aggrName: The aggregate in which the volume will be created
++ volName: The name of the new volume
 + iqn: The initiator's host IQN
++ os_name: the initiator's host operating system [linux|windows|vmware]
++ volSize: The size of the volume in TB
 
 ## Step 4: Run the playbook
 ### Instructions
