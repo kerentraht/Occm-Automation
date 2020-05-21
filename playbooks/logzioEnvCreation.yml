@@ -1,0 +1,14 @@
+---
+- name: Create CVO Environment for logzio
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  roles:
+    - cvo
+  tasks:
+    - include_role:
+        name: aggregate
+      with_items:
+         - { name: testuser1, uid: 1002, groups: "wheel, staff" }
+         - { name: testuser1, uid: 1002, groups: "wheel, staff" }
+

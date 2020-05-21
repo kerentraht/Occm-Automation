@@ -1,22 +1,11 @@
 ---
-- name: Create Volume
-  hosts: localhost
-  connection: local
-  gather_facts: False
-  vars:
-      occm_ip: "{{occmIp}}"
-      client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
-      auth0_domain: netapp-cloud-account.auth0.com
-      weType: "{{weType}}"
-      weName: "{{weName}}"
-  tasks:
 # Create Template File
     - debug: msg="{{weType}}"
     - name: Set Enviroment Detail For Cloud Portal
       set_fact: envType="vsa"
       when: weType == 'aws'
     - name: Set Environment Detail For AWS-HA
-      set_fact: envType="vsa/ha"
+      set_fact: envType="aws/ha"
       when:  weType == 'awsha'
     - name: Validate OCCM environment
       fail: msg="Failed to get cloud OCCM to work with --> {{weType}} ?"
@@ -39,7 +28,7 @@
 ## Get CVO Detail
     - name: Get CVO Name
       uri:
-        url: "http://{{occm_ip}}/occm/api/{{envType}}/working-environments"
+        url: "http://{{occm_ip}}/occm/api/vsa/working-environments"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
@@ -55,10 +44,10 @@
       set_fact: we={{item}}
       loop: "{{ we_response.json | json_query(we_query) }}"
       vars:
-        we_query: "[?name=='{{weName}}'].{publicId: publicId, svmName: svmName, tenantId: tenantId, weType: workingEnvironmentType}"
+        we_query: "[?name=='{{otc_name}}'].{publicId: publicId, svmName: svmName, tenantId: tenantId, weType: workingEnvironmentType}"
 ## Exit If CVO is not apear
     - name: Exit if CVO name does not exists
-      fail: msg="Failed to find given CVO name  - {{weName}}"
+      fail: msg="Failed to find given CVO name  - {{otc_name}}"
       when: we is undefined
     - name: set we id
       set_fact: we_id="{{we.publicId}}"
@@ -69,7 +58,7 @@
     - name: Print SVM Name
       debug: msg={{svmName}}
     - name: Create Template File For quote
-      template: src=../templates/quoteIscsi.j2 dest=../templates/quote.json
+      template: src=../templates/quoteIscsi.j2 dest=../dataQueries/quote.json
     - name: Do Quote OTC
       uri:
         url: "http://{{occm_ip}}/occm/api/{{envType}}/volumes/quote"
@@ -78,27 +67,25 @@
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         body_format: json
-        body: "{{ lookup('file','../templates/quote.json') }}"
+        body: "{{ lookup('file','../dataQueries/quote.json') }}"
         status_code: 200,204,202
         timeout: 180
       register: quote_response
     - name: Print Quote
       debug: msg={{quote_response.json.numOfDisks}}
-    - debug: msg={{quote_response.json.aggregateName}}
     - name: set numOfDisks & aggregateName
       set_fact: numOfDisks="{{quote_response.json.numOfDisks}}"
-    - set_fact: aggregateName="{{quote_response.json.aggregateName}}"
     - name: Create Template File For volume
-      template: src=../templates/iscsiVolume.j2 dest=../templates/volume.json
+      template: src=../templates/iscsiVolume.j2 dest=../dataQueries/volume.json
     - name: Create Volume
       uri:
-        url: "http://{{occm_ip}}/occm/api/{{envType}}/volumes?createAggregateIfNotFound=true"
+        url: "http://{{occm_ip}}/occm/api/{{envType}}/volumes"
         method: POST
         headers:
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         body_format: json
-        body: "{{ lookup('file','../templates/volume.json') }}"
+        body: "{{ lookup('file','../dataQueries/volume.json') }}"
         status_code: 200,204,202
         timeout: 180
       register: vol_response

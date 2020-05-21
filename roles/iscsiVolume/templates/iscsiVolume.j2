@@ -1,0 +1,27 @@
+{
+	"workingEnvironmentId": "{{we_id}}",
+	"svmName": "{{svmName}}",
+	"snapshotPolicyName": "default",
+	"name": "{{volName}}",
+	"providerVolumeType": "{{providerType}}",
+        "aggregateName": "{{aggregateName}}",
+	"verifyNameUniqueness": true,
+	"size": {
+		"size": {{volSize}},
+		"unit": "TB"
+	},
+	"enableThinProvisioning": true,
+        "autoVsaCapacityManagementEnabled": true,
+	"enableDeduplication": true,
+	"enableCompression": true,
+	"maxNumOfDisksApprovedToAdd": {{numOfDisks}},
+        "iscsiInfo": {
+        "osName": "{{os_name}}",
+        "igroupCreationRequest": {
+            "initiators": [
+                "{{iqn}}"
+            ],
+            "igroupName": "{{volName}}"
+        },
+    }
+}

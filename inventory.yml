@@ -1,0 +1,36 @@
+# This is the main vars file of the playbook. All fields should be filled.
+all:   
+  hosts:
+    localhost
+  vars:
+    auth0_domain: netapp-cloud-account.auth0.com
+    client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
+    cloud_provider_account: InstanceProfile
+    refToken:
+    occm_ip:
+    envType:
+    otc_name:
+    region:
+    vpc_id:
+    node1SubnetId:
+    node2SubnetId:
+    mediatorSubnetId:
+    routeTableIds:
+    instance_type:
+    key_pair:
+    svmPassword:
+    clusterFloatingIP:
+    dataFloatingIP1:
+    dataFloatingIP2:
+    svmFloatingIP:
+    providerType:
+# The following is a dictionary of all aggregates that will be created
+    item:
+      - {aggrName: aggr2, providerType: gp2, diskSize: 8}
+      - {aggrName: aggr3, providerType: gp2, diskSize: 8}
+# The following is a dictionary of all iscsi volumes that will be created
+    list:
+      - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:1111example", os_name: linux, volSize: 1}
+      - {aggrName: aggr2, volName: iscsi2, iqn: "iqn.1994-05.com.redhat:1111example", os_name: linux, volSize: 1}
+      - {aggrName: aggr3, volName: iscsi3, iqn: "iqn.1994-05.com.redhat:1111example", os_name: linux, volSize: 1}
+   

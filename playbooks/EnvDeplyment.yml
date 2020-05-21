@@ -1,0 +1,25 @@
+---
+- name: Create CVO Environment for logzio
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+#    - include_role:
+#        name: cvo
+     - include_role:
+         name: aggregate
+       vars:
+         aggregateName: "{{ item.aggrName }}"
+         diskSize: "{{ item.diskSize }}"
+         providerTye: "{{ item.providerTye }}"
+       with_items:
+        - "{{ vars.item }}"
+     - include_role:
+         name: iscsiVolume
+       vars:
+         aggregateName: "{{ item.aggrName }}"
+         volName: "{{ item.volName }}"
+         iqn: "{{ item.iqn }}"
+         os_name: "{{ item.os_name }}"
+       with_items:
+         - "{{ vars.list }}"

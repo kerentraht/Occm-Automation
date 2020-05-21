@@ -1,0 +1,43 @@
+{
+  "name": "{{otc_name}}",
+  "tenantId": "{{tenant_id}}",
+  "region": "{{region}}",
+  "packageName": "aws_ha_custom",
+  "dataEncryptionType": "AWS",
+  "capacityTier": "S3",
+  "vsaMetadata": {
+    "ontapVersion": "latest",
+    "licenseType": "ha-cot-premium-paygo",
+    "instanceType": "r5.2xlarge",
+    "useLatestVersion": true
+  },
+  "writingSpeedState": "NORMAL",
+  "svmPassword": "{{svmPassword}}",
+  "vpcId": "{{vpc_id}}",
+  "ontapEncryptionParameters": null,
+  "ebsVolumeType": "gp2",
+  "ebsVolumeSize": {
+      "size": 8,
+      "unit": "TB",
+      "_identifier": "8 TB"
+  },
+  "haParams": {
+    "clusterFloatingIP": "{{clusterFloatingIP}}",
+    "dataFloatingIP": "{{dataFloatingIP1}}",
+    "dataFloatingIP2": "{{dataFloatingIP2}}",
+    "svmFloatingIP": "{{svmFloatingIP}}",
+    "failoverMode": "FloatingIP",
+    "node1SubnetId": "{{ node1SubnetId }}",
+    "node2SubnetId": "{{ node2SubnetId }}",
+    "mediatorSubnetId": "{{ mediatorSubnetId }}",
+    "routeTableIds": [
+      "{{routeTableIds}}"
+    ],
+    "mediatorKeyPairName": "{{key_pair}}",
+    "mediatorAssignPublicIP": true
+  },
+  "awsTags": [],
+  "optimizedNetworkUtilization": false,
+  "instanceTenancy": "default",
+  "cloudProviderAccount": "{{ cloud_provider_account }}"
+}
