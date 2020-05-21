@@ -88,7 +88,7 @@ ansible-playbook /playbooks/EnvDeployment.yml -i inventory.yml
 ```
 Wait for the playbook to complete all tasks successfully!
 
-## Step 4 - Attach the iscsi device to the host
+## Step 5 - Attach the iscsi device to the host
 
 + Guide reference for linux host can be found here:
 https://www.synology.com/en-us/knowledgebase/DSM/tutorial/Virtualization/How_to_set_up_and_use_iSCSI_target_on_Linux

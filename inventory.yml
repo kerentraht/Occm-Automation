@@ -6,29 +6,31 @@ all:
     auth0_domain: netapp-cloud-account.auth0.com
     client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
     cloud_provider_account: InstanceProfile
-    refToken:
-    occm_ip:
-    envType:
-    otc_name:
-    region:
-    vpc_id:
-    node1SubnetId:
-    node2SubnetId:
-    mediatorSubnetId:
-    routeTableIds:
-    instance_type:
-    key_pair:
-    svmPassword:
-    clusterFloatingIP:
-    dataFloatingIP1:
-    dataFloatingIP2:
-    svmFloatingIP:
-    providerType:
-    aggr1Name: aggr1
-    aggr2Name:
-    aggr3Name:
-# The following is a dictionary of all volumes that will be created
-    list:
+    refToken: xxxxxxyyyyyyyzzzzz
+    occm_ip: 50.50.50.50
+    envType: awsha
+    otc_name: my_cvo
+    region: us-east-2
+    vpc_id: vpc-xxxyyy
+    node1SubnetId: subnet-aaabbbcccddd
+    node2SubnetId: subnet-eeefffggghhh
+    mediatorSubnetId: subnet-iiijjjkkklll
+    routeTableIds: rtb-xxxxyyyy
+    instance_type: m4.4xlarge
+    key_pair: my-key
+    svmPassword: mypassword
+    clusterFloatingIP: 1.1.1.1
+    dataFloatingIP1: 1.1.1.2
+    dataFloatingIP2: 1.1.1.3
+    svmFloatingIP: 1.1.1.4
+    providerType: gp2
+# A dictionary of all aggregates that will be created
+    aggrList:
+      - {aggrName: aggr1}
+      - {aggrName: aggr2}
+      - {aggrName: aggr3}
+# A dictionary of all volumes that will be created
+    volList:
       - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
       - {aggrName: aggr1, volName: iscsi2, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
       - {aggrName: aggr1, volName: iscsi3, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
