@@ -29,7 +29,7 @@
     - name: Print Tenant ID
       debug: msg={{tenant_id}}
     - name: Create Template File For CVO
-      template: src=../templates/cvo_aws_ha.j2 dest=../dataQueries/cvo_aws_ha.json
+      template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws_ha.json
     - name: Create OTC
       uri:
         url: "http://{{occm_ip}}/occm/api/aws/ha/working-environments"
@@ -38,7 +38,7 @@
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         body_format: json
-        body: "{{ lookup('file','../dataQueries/cvo_aws_ha.json') }}"
+        body: "{{ lookup('file','../templates/cvo_aws_ha.json') }}"
         status_code: 200,204,202
         timeout: 180
       register: otc_response
