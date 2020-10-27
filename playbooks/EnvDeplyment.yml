@@ -1,5 +1,5 @@
 ---
-- name: Create CVO Environment for logzio
+- name: Create CVO Environment
   hosts: localhost
   connection: local
   gather_facts: False
@@ -13,6 +13,7 @@
         diskSize: "{{item.diskSize}}"
       with_items:
          - "{{ vars.aggrList }}"
+      when: aggrList is defined
     - include_role:
         name: iscsiVolume
       vars:
@@ -23,4 +24,5 @@
         volSize: "{{ item.volSize }}"
       with_items:
         - "{{ vars.volList }}"
+      when: volList is defined
         
