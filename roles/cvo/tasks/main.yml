@@ -25,9 +25,20 @@
         status_code: 200,204,202
         timeout: 180
       register: tenant_response
-    - set_fact: tenant_id="{{tenant_response.json.0.publicId}}"
-    - name: Print Tenant ID
-      debug: msg={{tenant_id}}
+    - name: Extract workspaces list
+      set_fact:
+        workspace_ids: '{{ tenant_response.json | json_query("[].{workspace_name: name, workspace_id: publicId}") }}'
+    - name: Locate the workspace and define ID
+      set_fact:
+        tenant_id: "{{ item.workspace_id }}"
+      when: item.workspace_name == my_workspace
+      with_items: "{{ workspace_ids }}"
+    - name: Verify that the workspace was located
+      block:
+      - debug: msg="Workspace {{my_workspace}} was located with ID {{':'}} {{tenant_id}}"
+        when: tenant_id is defined
+      - fail: msg="Workspace named {{':'}} {{my_workspace}} does not exist."
+        when: tenant_id is not defined
     - name: Create Template File For CVO
       template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws_ha.json
     - name: Create OTC

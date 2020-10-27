@@ -1,0 +1,24 @@
+---
+
+  #- name: Print accountId
+  #  debug: msg={{accountId}}
+
+
+  - name : "Get subscription IDs "
+    uri:
+      url: https://api.services.cloud.netapp.com/subscriptions/{{accountId}}
+      method: GET
+      headers:
+        Authorization: "Bearer {{ tokenAPI }}"
+      return_content: yes
+      status_code: 200,204,202
+    register: subscription_response
+    ignore_errors: no
+
+  - name: "Get Subscriptions for account {{ accountId }}"
+    set_fact: subscription={{myItem}}
+    loop: "{{ subscription_response.json | json_query(sub_query) }}"
+    loop_control:
+      loop_var: myItem
+    vars:
+      sub_query: "[?subscriptionStatus=='subscribed'].{cloudProvider: cloudProvider, subscriptionName: subscriptionName, subscriptionId: subscriptionId}"

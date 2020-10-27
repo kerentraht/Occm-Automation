@@ -8,6 +8,7 @@ all:
     cloud_provider_account: InstanceProfile
     refToken: xxxxxxyyyyyyyzzzzz
     occm_ip: 50.50.50.50
+    my_workspace: Keren
     envType: awsha
     otc_name: my_cvo
     region: us-east-2
