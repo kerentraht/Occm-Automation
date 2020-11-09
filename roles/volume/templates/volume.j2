@@ -1,0 +1,26 @@
+{
+	"workingEnvironmentId": "{{we_id}}",
+	"svmName": "{{svmName}}",
+	"exportPolicyInfo": {
+    "ips": [
+      "0.0.0.0/0"
+    ],
+    "policyType": "custom"
+    },
+	"snapshotPolicyName": "default",
+	"name": "{{volName}}",
+	"iops": null,
+	"providerVolumeType": "{{providerType}}",
+	"capacityTier": "S3",
+	"tieringPolicy": "auto",
+	"verifyNameUniqueness": true,
+	"size": {
+		"size": {{volSize}},
+		"unit": "GB"
+	},
+	"enableThinProvisioning": true,
+	"enableDeduplication": true,
+	"enableCompression": true,
+	"maxNumOfDisksApprovedToAdd": {{numOfDisks}},
+	"aggregateName": "{{aggregateName}}"
+}

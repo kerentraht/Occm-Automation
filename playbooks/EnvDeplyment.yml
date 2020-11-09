@@ -6,6 +6,7 @@
   tasks:
     - include_role:
         name: cvo
+      when: otc_name is defined
     - include_role:
         name: aggregate
       vars:
@@ -21,6 +22,15 @@
         volName: "{{ item.volName }}"
         iqn: "{{ item.iqn }}"
         os_name: "{{ item.os_name }}}"
+        volSize: "{{ item.volSize }}"
+      with_items:
+        - "{{ vars.iscsiVolList }}"
+      when: iscsiVolList is defined
+    - include_role:
+        name: volume
+      vars:
+        aggrName: "{{ item.aggrName }}"
+        volName: "{{ item.volName }}"
         volSize: "{{ item.volSize }}"
       with_items:
         - "{{ vars.volList }}"
