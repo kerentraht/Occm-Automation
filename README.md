@@ -50,7 +50,7 @@ This file should be modified by the user, according to the desired environment.
 + cloud_provider_account: InstanceProfile
 ### User input variables:
 + refToken: The refresh token string (from step1)
-+ occm_ip: Cloud manager's Ip address
++ occm_ip: Your local connector Ip address
 + my_workspace: The workspace name in which you want to deploy the WE
 + envType: Working environment type - **aws** for single node or **awsha** for HA cluster
 + otc_name: The desired working environment's name
