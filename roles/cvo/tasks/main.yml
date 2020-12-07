@@ -1,5 +1,10 @@
 ---
 # tasks file for cvo
+    - name: define WE type
+      set_fact: we_type_path = "aws/ha"
+      when: envType == "awsha"
+      set_fact: we_type_path = "vsa"
+      when: envType == "aws"
     - name: Print Auth Domain
       debug: msg={{auth0_domain}}
     - name: Get Token
@@ -39,17 +44,21 @@
         when: tenant_id is defined
       - fail: msg="Workspace named {{':'}} {{my_workspace}} does not exist."
         when: tenant_id is not defined
-    - name: Create Template File For CVO
-      template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws_ha.json
+    - name: Create Template File For CVO HA
+      template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws.json
+      when: envType == "awsha"
+    - name: Create Template File For CVO SN
+      template: src=../templates/cvo_aws_sn.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws.json
+      when: envType == "aws"
     - name: Create OTC
       uri:
-        url: "http://{{occm_ip}}/occm/api/aws/ha/working-environments"
+        url: "http://{{occm_ip}}/occm/api/{{we_type_path}}/working-environments"
         method: POST
         headers:
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         body_format: json
-        body: "{{ lookup('file','../templates/cvo_aws_ha.json') }}"
+        body: "{{ lookup('file','../templates/cvo_aws.json') }}"
         status_code: 200,204,202
         timeout: 180
       register: otc_response
