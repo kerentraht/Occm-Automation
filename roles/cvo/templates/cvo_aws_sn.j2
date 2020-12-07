@@ -1,0 +1,30 @@
+{
+  "name": "{{otc_name}}",
+  "tenantId": "{{tenant_id}}",
+  "region": "{{region}}",
+  "packageName": "aws_standard",
+  "dataEncryptionType": "AWS",
+  "capacityTier": "S3",
+  "vsaMetadata": {
+    "ontapVersion": "latest",
+    "licenseType": "cot-standard-paygo",
+    "instanceType": "r5.2xlarge",
+    "useLatestVersion": true
+  },
+  "writingSpeedState": "NORMAL",
+  "subnetId": "{{ node1SubnetId }}",
+  "svmPassword": "{{ svmPassword }}",
+  "vpcId": "{{vpc_id}}",
+  "ontapEncryptionParameters": null,
+  "ebsVolumeType": "gp2",
+  "ebsVolumeSize": {
+      "size": 8,
+      "unit": "TB",
+      "_identifier": "8 TB"
+  },
+  "awsTags": [],
+  "optimizedNetworkUtilization": false,
+  "instanceTenancy": "default",
+  "iops": null,
+  "cloudProviderAccount": "InstanceProfile"
+}

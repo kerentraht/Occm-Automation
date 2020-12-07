@@ -33,7 +33,7 @@
     - name: Print WE ID
       debug: msg={{we_id}}
     - name: Create Template File For aggregate
-      template: src=../templates/aggregate.j2 dest=../dataQueries/aggregate.json
+      template: src=../templates/aggregate.j2 dest={{ lookup('env', 'PWD') }}/roles/aggregate/templates/aggregate.json
     - name: Create Aggregate
       uri:
         url: "http://{{occm_ip}}/occm/api/aws/ha/aggregates"
@@ -42,7 +42,7 @@
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         body_format: json
-        body: "{{ lookup('file','../dataQueries/aggregate.json') }}"
+        body: "{{ lookup('file','../templates/aggregate.json') }}"
         status_code: 200,204,202
         timeout: 180
       register: aggr_response

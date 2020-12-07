@@ -31,13 +31,14 @@ all:
       - {aggrName: aggr2, diskSize: 8}
       - {aggrName: aggr3, diskSize: 8}
 # A dictionary of all volumes that will be created
-    volList:
+    iscsiVolList:
       - {aggrName: aggr1, volName: iscsi1, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
       - {aggrName: aggr1, volName: iscsi2, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
       - {aggrName: aggr1, volName: iscsi3, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_2, volName: iscsi4, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_2, volName: iscsi5, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_2, volName: iscsi6, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_3, volName: iscsi7, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_3, volName: iscsi8, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
-      - {aggrName: aggr_8t_3, volName: iscsi9, iqn: "iqn.1994-05.com.redhat:5a1717a4e42", os_name: linux, volSize: 16}
+    volList:
+      - {volName: firstVol, volSize: 10}
+      - {volName: secondVol, volSize: 10}
+      - {volName: thirdVol, volSize: 10}
+
+
+
