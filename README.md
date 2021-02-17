@@ -48,9 +48,10 @@ This file should be modified by the user, according to the desired environment.
 + auth0_domain: netapp-cloud-account.auth0.com
 + client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
 + cloud_provider_account: InstanceProfile
++ api_backend: cloudmanager.cloud.netapp.com
 ### User input variables:
 + refToken: The refresh token string (from step1)
-+ occm_ip: Your local connector Ip address
++ oconnector_id: Your Cloud Manager Connector ID
 + my_workspace: The workspace name in which you want to deploy the WE
 + envType: Working environment type - **aws** for single node or **awsha** for HA cluster
 + otc_name: The desired working environment's name
