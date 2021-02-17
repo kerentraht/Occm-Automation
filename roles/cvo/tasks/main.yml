@@ -1,10 +1,6 @@
 ---
 # tasks file for cvo
-    - name: define WE type
-      set_fact: we_type_path = "aws/ha"
-      when: envType == "awsha"
-      set_fact: we_type_path = "vsa"
-      when: envType == "aws"
+
     - name: Print Auth Domain
       debug: msg={{auth0_domain}}
     - name: Get Token
@@ -22,10 +18,12 @@
     - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
     - name: Get Tenant
       uri:
-        url: "http://{{occm_ip}}/occm/api/tenants"
+        url: "http://{{api_backend}}/occm/api/tenants"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         timeout: 180
@@ -45,17 +43,19 @@
       - fail: msg="Workspace named {{':'}} {{my_workspace}} does not exist."
         when: tenant_id is not defined
     - name: Create Template File For CVO HA
-      template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws.json
+      template: src=../templates/cvo_aws_ha.j2 dest={{ lookup('env', 'PWD') }}/playbooks/roles/cvo/templates/cvo_aws.json
       when: envType == "awsha"
     - name: Create Template File For CVO SN
-      template: src=../templates/cvo_aws_sn.j2 dest={{ lookup('env', 'PWD') }}/roles/cvo/templates/cvo_aws.json
+      template: src=../templates/cvo_aws_sn.j2 dest={{ lookup('env', 'PWD') }}/playbooks/roles/cvo/templates/cvo_aws.json
       when: envType == "aws"
     - name: Create OTC
       uri:
-        url: "http://{{occm_ip}}/occm/api/{{we_type_path}}/working-environments"
+        url: "https://{{api_backend}}/occm/api/{{we_type_path}}/working-environments"
         method: POST
         headers:
+           X-Agent-Id: "{{connector_id}}"
            Authorization: "{{token_type}} {{ token }}"
+           Content-Type: application/json
            Referer: "Ansible"
         body_format: json
         body: "{{ lookup('file','../templates/cvo_aws.json') }}"
@@ -67,9 +67,10 @@
     - debug: msg={{otc_response.json.publicId}}
     - name: Wait for OTC
       uri:
-        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{otc_response.oncloud_request_id}}"
+        url: "http://{{api_backend}}/occm/api/audit/activeTask/{{otc_response.oncloud_request_id}}"
         method: GET
         headers:
+           X-Agent-Id: "{{connector_id}}"
            Authorization: "{{token_type}} {{ token }}"
            Referer: "Ansible"
         status_code: 200,204,202

@@ -6,9 +6,10 @@ all:
     auth0_domain: netapp-cloud-account.auth0.com
     client_id: Mu0V1ywgYteI6w1MbD15fKfVIUrNXGWC
     cloud_provider_account: InstanceProfile
+    api_backend: cloudmanager.cloud.netapp.com
     refToken: xxxxxxyyyyyyyzzzzz
-    occm_ip: 50.50.50.50
-    my_workspace: Keren
+    connector_id: abcdefghijklmnopqrstuvwxyzclients
+    my_workspace: myworkspace
     envType: awsha
     otc_name: my_cvo
     region: us-east-2
