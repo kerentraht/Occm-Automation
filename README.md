@@ -68,7 +68,6 @@ This file should be modified by the user, according to the desired environment.
 + dataFloatingIP1: Choose an IP address outside of your VPC for the first node
 + dataFloatingIP2: Choose an IP address outside of your VPC for the second node
 + svmFloatingIP: Choose an IP address outside of your VPC
-+ providerType: The disk type for the aggregate [gp2|st1|sc1]
 
 #### Dictionary variables for loops:
 The "aggrList" and "volList" variables are dictionary vars representing the aggregates and volumes to create, with their additional vars. 

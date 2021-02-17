@@ -30,7 +30,7 @@
       register: tenant_response
     - name: Extract workspaces list
       set_fact:
-        workspace_ids: '{{ tenant_response.json | json_query("[].{workspace_name: name, workspace_id: publicId}") }}'
+        workspace_ids: '{{ tenant_response.json | json_query("[].{ workspace_name: name, workspace_id: publicId }") }}'
     - name: Locate the workspace and define ID
       set_fact:
         tenant_id: "{{ item.workspace_id }}"
