@@ -6,7 +6,7 @@
   tasks:
     - include_role:
         name: cvo
-      when: otc_name is defined
+      when: create_otc
     - include_role:
         name: aggregate
       vars:

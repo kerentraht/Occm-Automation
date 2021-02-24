@@ -18,28 +18,44 @@
     - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
     - name: Get OTC Id
       uri:
-        url: "http://{{occm_ip}}/occm/api/vsa/working-environments"
+        url: "http://{{api_backend}}/occm/api/vsa/working-environments"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         timeout: 180
       register: otc_response
-    - name: Print OTC public Id
-      debug: msg={{otc_response.json.0.publicId}}
-    - name: set we id
-      set_fact: we_id="{{otc_response.json.0.publicId}}"
+    - name: Extract WEs list
+      set_fact:
+        environments_ids: '{{ otc_response.json | json_query("[].{environment_name: name, environment_id: publicId}") }}'
+    - name: Locate the environment and define ID
+      set_fact:
+        we_id: "{{ line_item.environment_id }}"
+      when: line_item.environment_name == otc_name
+      with_items: "{{ environments_ids }}"
+      loop_control:
+        loop_var: line_item
+    - name: Verify that the env was located
+      block:
+      - debug: msg="Environment {{otc_name}} was located with ID {{':'}} {{we_id}}"
+        when: we_id is defined
+      - fail: msg="Environment named {{':'}} {{otc_name}} does not exist."
+        when: we_id is not defined
     - name: Print WE ID
       debug: msg={{we_id}}
     - name: Create Template File For aggregate
-      template: src=../templates/aggregate.j2 dest={{ lookup('env', 'PWD') }}/roles/aggregate/templates/aggregate.json
+      template: src=../templates/aggregate.j2 dest={{ lookup('env', 'PWD') }}/playbooks/roles/aggregate/templates/aggregate.json
     - name: Create Aggregate
       uri:
-        url: "http://{{occm_ip}}/occm/api/aws/ha/aggregates"
+        url: "https://{{api_backend}}/occm/api/{{we_type_path}}/aggregates"
         method: POST
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         body_format: json
         body: "{{ lookup('file','../templates/aggregate.json') }}"
@@ -50,10 +66,12 @@
       debug: msg={{aggr_response.oncloud_request_id}}
     - name: Wait for Aggregate creation
       uri:
-        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{aggr_response.oncloud_request_id}}"
+        url: "http://{{api_backend}}/occm/api/audit/activeTask/{{aggr_response.oncloud_request_id}}"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         body_format: json

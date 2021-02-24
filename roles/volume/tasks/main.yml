@@ -17,24 +17,42 @@
     - set_fact: token_type="{{ (token_response.content|from_json).token_type }}"
     - name: Get OTC Id
       uri:
-        url: "http://{{occm_ip}}/occm/api/vsa/working-environments"
+        url: "http://{{api_backend}}/occm/api/vsa/working-environments"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         timeout: 180
       register: otc_response
-    - name: set we id
-      set_fact: we_id="{{otc_response.json.0.publicId}}"
+    - name: Extract WEs list
+      set_fact:
+        environments_ids: '{{ otc_response.json | json_query("[].{environment_name: name, environment_id: publicId}") }}'
+    - name: Locate the environment and define ID
+      set_fact:
+        we_id: "{{ line_item.environment_id }}"
+      when: line_item.environment_name == otc_name
+      with_items: "{{ environments_ids }}"
+      loop_control:
+        loop_var: line_item
+    - name: Verify that the env was located
+      block:
+      - debug: msg="Environment {{otc_name}} was located with ID {{':'}} {{we_id}}"
+        when: we_id is defined
+      - fail: msg="Environment named {{':'}} {{otc_name}} does not exist."
+        when: we_id is not defined
     - name: Print WE ID
       debug: msg={{we_id}}
     - name: Get SvmName
       uri:
-        url: "http://{{occm_ip}}/occm/api/vsa/working-environments/{{we_id}}?fields=svmName"
+        url: "https://{{api_backend}}/occm/api/{{we_type_path}}/working-environments/{{we_id}}?fields=svmName"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         timeout: 180
@@ -44,13 +62,15 @@
     - name: Print SVM Name
       debug: msg={{svmName}}      
     - name: Create Template File For quote
-      template: src=../templates/quote.j2 dest={{ lookup('env', 'PWD') }}/roles/volume/templates/quote.json
+      template: src=../templates/quote.j2 dest={{ lookup('env', 'PWD') }}/playbooks/roles/volume/templates/quote.json
     - name: Do Quote OTC
       uri:
-        url: "http://{{occm_ip}}/occm/api/aws/ha/volumes/quote"
+        url: "https://{{api_backend}}/occm/api/{{we_type_path}}/volumes/quote"
         method: POST
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         body_format: json
         body: "{{ lookup('file','../templates/quote.json') }}"
@@ -62,15 +82,17 @@
     - debug: msg={{quote_response.json.aggregateName}}
     - name: set numOfDisks & aggregateName
       set_fact: numOfDisks="{{quote_response.json.numOfDisks}}"
-    # - set_fact: aggregateName="{{quote_response.json.aggregateName}}"  
+    - set_fact: aggregateName="{{quote_response.json.aggregateName}}"  
     - name: Create Template File For volume
-      template: src=../templates/volume.j2 dest={{ lookup('env', 'PWD') }}/roles/volume/templates/volume.json
+      template: src=../templates/volume.j2 dest={{ lookup('env', 'PWD') }}/playbooks/roles/volume/templates/volume.json
     - name: Create Volume
       uri:
-        url: "http://{{occm_ip}}/occm/api/aws/ha/volumes?createAggregateIfNotFound=true"
+        url: "https://{{api_backend}}/occm/api/{{we_type_path}}/volumes?createAggregateIfNotFound=true"
         method: POST
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         body_format: json
         body: "{{ lookup('file','../templates/volume.json') }}"
@@ -81,10 +103,12 @@
       debug: msg={{vol_response.oncloud_request_id}}
     - name: Wait for Volume creation
       uri:
-        url: "http://{{occm_ip}}/occm/api/audit/activeTask/{{vol_response.oncloud_request_id}}"
+        url: "http://{{api_backend}}/occm/api/audit/activeTask/{{vol_response.oncloud_request_id}}"
         method: GET
         headers:
            Authorization: "{{token_type}} {{ token }}"
+           X-Agent-Id: "{{connector_id}}"
+           Content-Type: application/json
            Referer: "Ansible"
         status_code: 200,204,202
         body_format: json
