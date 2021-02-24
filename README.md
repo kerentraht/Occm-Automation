@@ -55,6 +55,7 @@ This file should be modified by the user, according to the desired environment.
 + my_workspace: The workspace name in which you want to deploy the WE
 + envType: Working environment type - **aws** for single node or **awsha** for HA cluster
 + otc_name: The desired working environment's name
++ create_otc: (Boolean) set to 'true' to create a new WE, or 'false' to skip the WE creation
 + region: AWS region
 + vpc_id: AWS vpc Id
 + node1SubnetId: Id of the AWS subnet in which the first node wil be created
