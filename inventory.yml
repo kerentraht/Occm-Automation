@@ -25,7 +25,6 @@ all:
     dataFloatingIP1: 1.1.1.2
     dataFloatingIP2: 1.1.1.3
     svmFloatingIP: 1.1.1.4
-    providerType: gp2
 # A dictionary of all aggregates that will be created
     aggrList:
       - {aggrName: aggr1, diskSize: 8}
