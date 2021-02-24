@@ -12,6 +12,7 @@ all:
     my_workspace: myworkspace
     envType: awsha
     otc_name: my_cvo
+    create_otc: true
     region: us-east-2
     vpc_id: vpc-xxxyyy
     node1SubnetId: subnet-aaabbbcccddd
