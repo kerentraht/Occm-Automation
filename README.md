@@ -1,6 +1,7 @@
 # OCCM Ansible automation usage
-This repository contains an automated Ansible pipeline for OCCM management, allowing a fully deployed environment with one command only.
+This repository contains an automated Ansible pipeline for Cloud Volumes ONTAP deployment and management, allowing a fully deployed environment with one command only.
 Following is a step-by-step user guide to run your own deployement with Ansible.
+These playbooks assume you already have a Cloud Manager connector deployed.
 
 Good luck (:
 ## Step 1: Get your refresh token
@@ -51,7 +52,7 @@ This file should be modified by the user, according to the desired environment.
 + api_backend: cloudmanager.cloud.netapp.com
 ### User input variables:
 + refToken: The refresh token string (from step1)
-+ oconnector_id: Your Cloud Manager Connector ID
++ connector_id: Your Cloud Manager Connector ID - this can be found under cloudmanager.netapp.com > Connector > Manage Connector
 + my_workspace: The workspace name in which you want to deploy the WE
 + envType: Working environment type - **aws** for single node or **awsha** for HA cluster
 + otc_name: The desired working environment's name
@@ -63,7 +64,7 @@ This file should be modified by the user, according to the desired environment.
 + mediatorSubnetId: Id of the AWS subnet in which the mediator wil be created
 + routeTableIds: Id of VPC's route table
 + instance_type: AWS instance type for the CVO, for example: m4.4xlarge
-+ key_pair: AWS key pair that will be used to connect to the CVO instane
++ key_pair: AWS key pair that will be used to connect to the CVO instance
 + svmPassword: Choose the login password for the CVO
 + clusterFloatingIP: Choose an IP address outside of your VPC for the cluster managment
 + dataFloatingIP1: Choose an IP address outside of your VPC for the first node
@@ -100,7 +101,7 @@ Wait for the playbook to complete all tasks successfully!
 ## Step 5 - Attach the iscsi device to the host
 
 + Guide reference for linux host can be found here:
-https://www.synology.com/en-us/knowledgebase/DSM/tutorial/Virtualization/How_to_set_up_and_use_iSCSI_target_on_Linux
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/osm-create-iscsi-initiator
 
 + Guide reference for windows host can be found here:
 https://www.virtualizationhowto.com/2017/07/add-iscsi-shared-storage-in-windows-server-2016/
