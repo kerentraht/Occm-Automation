@@ -3,7 +3,12 @@
   hosts: localhost
   connection: local
   gather_facts: False
+  vars_files:
+    - ../vars.yml
   tasks:
+    - name: define WE type path
+      set_fact: 
+        we_type_path: '{{ "aws/ha" if envType=="awsha" else "vsa" }}'
     - include_role:
         name: cvo
       when: create_otc

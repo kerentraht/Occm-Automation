@@ -42,8 +42,8 @@ TASK [Get Subscriptions for account account-xxxxxxx] ***************************
 ok: [localhost] => (item={'cloudProvider': 'aws', 'subscriptionName': 'Prod Account Subscription', 'subscriptionId': 'aws-XXXXXXXXXXXXXXXX-FFFFFFFFFF'})
 ok: [localhost] => (item={'cloudProvider': 'gcp', 'subscriptionName': 'GCP SUBSCRIPTION', 'subscriptionId': 'gcp-none-yet-123456789'})
 ```
-## Step 3: Setting up your inventory file
-In the main directory you can find the `inventory.yml` file, which contaoins all the variables that are required to run the automation, such as desired volume name, the OCCM IP address, etc...
+## Step 3: Setting up your variables file
+In the main directory you can find the `vars.yml` file, which contaoins all the variables that are required to run the automation, such as desired volume name, your connector's ID, etc...
 This file should be modified by the user, according to the desired environment.
 ### Static variables (Never change):
 + auth0_domain: netapp-cloud-account.auth0.com
@@ -57,6 +57,7 @@ This file should be modified by the user, according to the desired environment.
 + envType: Working environment type - **aws** for single node or **awsha** for HA cluster
 + otc_name: The desired working environment's name
 + create_otc: (Boolean) set to 'true' to create a new WE, or 'false' to skip the WE creation
++ providerType: The cloud provider volume type. For AWS: ["gp2", "io1", "st1", "sc1"].
 + region: AWS region
 + vpc_id: AWS vpc Id
 + node1SubnetId: Id of the AWS subnet in which the first node wil be created
@@ -89,12 +90,12 @@ Add/Remove rows according to the desired number of aggrgateds and volume you wis
 
 ## Step 4: Run the playbook
 ### Instructions
-Run the "EnvDeployment.yml" playbook (which is located under playbook dir) with the inventory.yml file attached as shown in the usage below. 
+Run the "EnvDeployment.yml" playbook 
 
 ### Usage
 >NOTE: The followoing command will create the full environment
 ```
-ansible-playbook /playbooks/EnvDeployment.yml -i inventory.yml
+ansible-playbook /playbooks/EnvDeployment.yml
 ```
 Wait for the playbook to complete all tasks successfully!
 
